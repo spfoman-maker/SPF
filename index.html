@@ -3,709 +3,496 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حاسبة معاش الوفاة - صندوق الحماية الاجتماعية</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<title>صندوق الحماية الاجتماعية — حاسبة المنافع</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --primary: #1a3a5c;
-    --accent: #c8942a;
-    --accent2: #2e7d63;
-    --bg: #f5f0e8;
-    --card: #fffdf8;
-    --text: #1c1c1c;
-    --muted: #6b6254;
-    --border: #d6cfc0;
-    --gold: #c8942a;
-    --red: #c0392b;
-    --green: #2e7d63;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family:'Cairo',sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-  body::before {
-    content:'';
-    position:fixed; top:0;left:0;right:0;bottom:0;
-    background:
-      radial-gradient(ellipse at 10% 20%,rgba(200,148,42,.08) 0%,transparent 50%),
-      radial-gradient(ellipse at 90% 80%,rgba(26,58,92,.08) 0%,transparent 50%);
-    pointer-events:none; z-index:0;
-  }
-  body::after {
-    content:'';
-    position:fixed; top:0;left:0;right:0;bottom:0;
-    background-image:
-      repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(200,148,42,.03) 40px,rgba(200,148,42,.03) 41px),
-      repeating-linear-gradient(-45deg,transparent,transparent 40px,rgba(26,58,92,.03) 40px,rgba(26,58,92,.03) 41px);
-    pointer-events:none; z-index:0;
-  }
-  .wrapper { position:relative;z-index:1;max-width:760px;margin:0 auto;padding:32px 20px 60px; }
+:root{--brand-900:#0a3d2e;--brand-800:#0f5538;--brand-700:#156b42;--brand-600:#1b7d4c;--brand-500:#2a9e5e;--brand-400:#4cb778;--brand-100:#e8f5ee;--brand-50:#f3faf6;--gold:#c9a24b;--gold-light:#e0bd6b;--gold-dark:#a5822f;--ink:#0e1d17;--ink-2:#2a3a33;--muted:#6a7872;--border:#d6e2db;--border-soft:#e8efea;--cream:#fafbf9;--red:#b91c1c;--amber:#b45309;--shadow-sm:0 1px 2px rgba(10,61,46,.05);--shadow:0 4px 16px rgba(10,61,46,.08);--shadow-lg:0 12px 32px rgba(10,61,46,.12);--font-display:'Readex Pro',sans-serif;--font-body:'IBM Plex Sans Arabic',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--cream);color:var(--ink);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;}
 
-  /* Header */
-  .header { text-align:center;margin-bottom:32px;animation:fadeDown .7s ease both; }
-  .header-badge {
-    display:inline-block;background:var(--primary);color:var(--gold);
-    font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;
-    letter-spacing:2px;padding:6px 20px;border-radius:2px;margin-bottom:14px;
-  }
-  .header h1 { font-size:clamp(24px,5vw,36px);font-weight:900;color:var(--primary);line-height:1.2;margin-bottom:6px; }
-  .header h1 span { color:var(--gold); }
-  .header p { font-family:'Tajawal',sans-serif;font-size:13px;color:var(--muted); }
-  .ornament { display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0; }
-  .ornament-line { flex:1;max-width:80px;height:1px;background:linear-gradient(to left,transparent,var(--gold)); }
-  .ornament-line:last-child { background:linear-gradient(to right,transparent,var(--gold)); }
-  .ornament-diamond { width:8px;height:8px;background:var(--gold);transform:rotate(45deg); }
+.site-header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+.header-top{background:linear-gradient(90deg,var(--brand-800),var(--brand-700));color:rgba(255,255,255,.9);padding:7px 0;font-size:12px;font-family:var(--font-display);}
+.header-top-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.ht-left{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.ht-left a{color:rgba(255,255,255,.85);text-decoration:none;transition:color .2s;display:inline-flex;align-items:center;gap:5px;}
+.ht-left a:hover{color:var(--gold-light);}
 
-  /* Card */
-  .card {
-    background:var(--card);border:1px solid var(--border);border-radius:12px;
-    padding:28px;margin-bottom:20px;box-shadow:0 4px 24px rgba(26,58,92,.07);
-    animation:fadeUp .6s ease both;
-  }
-  .card-title {
-    font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;
-    letter-spacing:1.5px;margin-bottom:22px;display:flex;align-items:center;gap:10px;
-  }
-  .card-title::before { content:'';display:block;width:4px;height:18px;background:var(--gold);border-radius:2px; }
+.header-main{max-width:1200px;margin:0 auto;padding:24px 20px 20px;text-align:center;}
+.brand{display:inline-flex;flex-direction:column;align-items:center;gap:14px;text-decoration:none;}
+.brand-emblem{width:95px;height:95px;display:flex;align-items:center;justify-content:center;position:relative;}
+.brand-emblem img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(10,61,46,.12));}
+.emblem-fallback{width:100%;height:100%;background:linear-gradient(135deg,var(--brand-700),var(--brand-500));border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:40px;border:3px solid var(--gold);}
+.brand-text{text-align:center;}
+.brand-ar{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--brand-800);line-height:1.2;letter-spacing:-.2px;}
+.brand-en{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;margin-top:4px;}
+.brand-tag{display:inline-block;margin-top:10px;font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--brand-700);background:var(--brand-100);padding:4px 14px;border-radius:100px;border:1px solid var(--brand-400);}
 
-  /* Inputs */
-  .input-group { margin-bottom:20px; }
-  .input-group label { display:block;font-size:13px;font-weight:600;color:var(--primary);margin-bottom:7px; }
-  .input-group label span { font-size:11px;font-weight:400;color:var(--muted);margin-right:5px; }
-  .input-wrap { position:relative; }
-  .input-wrap input[type=number], .input-wrap input[type=text] {
-    width:100%;padding:12px 44px 12px 16px;
-    font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;color:var(--primary);
-    background:var(--bg);border:2px solid var(--border);border-radius:8px;
-    outline:none;transition:border-color .2s,box-shadow .2s;
-    direction:ltr;text-align:right;
-  }
-  .input-wrap input:focus { border-color:var(--gold);box-shadow:0 0 0 4px rgba(200,148,42,.12); }
-  .input-unit { position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:var(--gold);pointer-events:none; }
+.header-nav-wrap{border-top:1px solid var(--border-soft);margin-top:20px;padding-top:16px;}
+.main-nav{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.nav-link{font-family:var(--font-display);background:transparent;border:none;color:var(--ink-2);padding:9px 18px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.nav-link:hover{background:var(--brand-100);color:var(--brand-700);}
+.nav-link.active{background:linear-gradient(135deg,var(--brand-800),var(--brand-600));color:#fff;box-shadow:0 2px 8px rgba(15,85,56,.25);}
 
-  /* Stepper */
-  .stepper {
-    display:flex;align-items:center;background:var(--bg);
-    border:2px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .2s;
-  }
-  .stepper:focus-within { border-color:var(--gold);box-shadow:0 0 0 4px rgba(200,148,42,.12); }
-  .stepper button {
-    width:48px;height:48px;background:none;border:none;font-size:22px;font-weight:300;
-    color:var(--primary);cursor:pointer;transition:background .15s,color .15s;flex-shrink:0;
-  }
-  .stepper button:hover { background:rgba(200,148,42,.1);color:var(--gold); }
-  .stepper input {
-    flex:1;text-align:center;border:none;background:none;
-    font-family:'Cairo',sans-serif;font-size:26px;font-weight:900;color:var(--primary);
-    outline:none;min-width:0;padding:0;
-  }
+.hero{background:linear-gradient(135deg,var(--brand-900) 0%,var(--brand-800) 40%,var(--brand-700) 100%);position:relative;padding:60px 20px 100px;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(201,162,75,.15) 0%,transparent 50%),radial-gradient(ellipse at bottom left,rgba(76,183,120,.2) 0%,transparent 50%);}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--cream) 98%);}
+.hero-pattern{position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 1px,transparent 50px),repeating-linear-gradient(-45deg,#fff 0,#fff 1px,transparent 1px,transparent 50px);}
+.hero-content{position:relative;z-index:1;max-width:800px;margin:0 auto;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px);color:rgba(255,255,255,.95);padding:7px 18px;border-radius:100px;font-size:12px;font-weight:500;letter-spacing:.5px;font-family:var(--font-display);margin-bottom:24px;}
+.hero-badge .dot{width:6px;height:6px;background:var(--gold-light);border-radius:50%;}
+.hero h1{font-family:var(--font-display);font-size:clamp(30px,5.5vw,52px);font-weight:700;color:#fff;line-height:1.1;margin-bottom:16px;letter-spacing:-.5px;}
+.hero h1 .accent{background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.8);max-width:560px;margin:0 auto 36px;line-height:1.7;}
+.hero-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;max-width:680px;margin:0 auto;}
+.hc{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);padding:18px 14px;border-radius:12px;color:#fff;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.hc:hover{background:rgba(255,255,255,.15);transform:translateY(-4px);border-color:var(--gold-light);box-shadow:0 12px 30px rgba(0,0,0,.2);}
+.hc-icon{width:44px;height:44px;margin:0 auto 10px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.hc-title{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:.2px;}
 
-  /* Pct badge */
-  .pct-preview { margin-top:8px;display:flex;align-items:center;gap:8px; }
-  .pct-badge { background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px; }
-  .pct-label { font-size:11px;color:var(--muted);font-family:'Tajawal',sans-serif; }
+.main{max-width:960px;margin:-40px auto 0;padding:0 20px 80px;position:relative;z-index:2;}
+.calc-section{display:none;}
+.calc-section.active{display:block;animation:fadeIn .5s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
-  /* Toggle section */
-  .toggle-section {
-    margin-top:16px;border:1px dashed var(--border);border-radius:10px;overflow:hidden;
-  }
-  .toggle-header {
-    display:flex;align-items:center;justify-content:space-between;
-    padding:13px 18px;cursor:pointer;user-select:none;
-    background:rgba(26,58,92,.03);transition:background .15s;
-  }
-  .toggle-header:hover { background:rgba(200,148,42,.06); }
-  .toggle-header-text { font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:8px; }
-  .toggle-arrow { font-size:12px;color:var(--gold);transition:transform .25s; }
-  .toggle-arrow.open { transform:rotate(180deg); }
-  .toggle-body { display:none;padding:18px; }
-  .toggle-body.open { display:block; }
+.sec-head{background:#fff;border:1px solid var(--border);border-radius:16px 16px 0 0;padding:24px 28px;display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--border-soft);}
+.sec-icon{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:#fff;}
+.sec-icon.i-pension{background:linear-gradient(135deg,var(--brand-800),var(--brand-600));}
+.sec-icon.i-elderly{background:linear-gradient(135deg,#4a7c3d,var(--brand-500));}
+.sec-icon.i-death{background:linear-gradient(135deg,var(--gold-dark),var(--gold));}
+.sec-icon.i-family{background:linear-gradient(135deg,#1a4971,#2d6494);}
+.sec-info{flex:1;min-width:0;}
+.sec-info h2{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.sec-info p{font-size:12px;color:var(--muted);line-height:1.5;}
+.sec-law{flex-shrink:0;font-size:10px;font-weight:600;background:var(--ink);color:#fff;padding:4px 10px;border-radius:4px;font-family:var(--font-display);letter-spacing:.3px;}
 
-  /* Beneficiary list */
-  .benef-list { display:flex;flex-direction:column;gap:14px; }
+.formula{background:#fff;border:1px solid var(--border);border-top:none;padding:20px 28px;border-bottom:1px solid var(--border-soft);}
+.formula-lbl{font-size:10px;font-weight:700;color:var(--brand-700);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.formula-lbl::before{content:'';width:4px;height:4px;background:var(--gold);border-radius:50%;}
+.formula-steps{display:flex;flex-direction:column;gap:8px;}
+.fstep{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink-2);line-height:1.55;}
+.fstep-n{flex-shrink:0;width:20px;height:20px;background:var(--brand-100);color:var(--brand-700);border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);margin-top:2px;}
 
-  .benef-item {
-    background:var(--bg);border:1px solid var(--border);border-radius:10px;
-    padding:16px;position:relative;transition:border-color .2s;
-  }
-  .benef-item:hover { border-color:rgba(200,148,42,.4); }
+.card{background:#fff;border:1px solid var(--border);padding:28px;border-radius:0 0 16px 16px;box-shadow:var(--shadow);margin-bottom:16px;}
+.card-title{font-size:11px;font-weight:700;color:var(--brand-700);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;display:flex;align-items:center;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--border-soft);}
+.card-title::before{content:'';width:3px;height:14px;background:var(--brand-700);border-radius:2px;}
 
-  .benef-item-header {
-    display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
-  }
-  .benef-type-badge {
-    font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;
-    background:var(--primary);color:#fff;
-  }
-  .benef-remove {
-    background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;
-    line-height:1;transition:color .15s;padding:2px 6px;border-radius:4px;
-  }
-  .benef-remove:hover { color:var(--red);background:rgba(192,57,43,.08); }
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;gap:14px;}}
 
-  .benef-fields { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
-  @media(max-width:480px){ .benef-fields { grid-template-columns:1fr; } }
+.field{display:flex;flex-direction:column;}
+.field label{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--ink);margin-bottom:7px;}
+.field label .hint{font-weight:400;color:var(--muted);margin-right:5px;font-family:var(--font-body);}
+.input-wrap{position:relative;}
+.input-wrap input,.input-wrap select{width:100%;padding:12px 42px 12px 14px;font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--ink);background:var(--brand-50);border:1.5px solid var(--border);border-radius:8px;outline:none;transition:all .2s;direction:ltr;text-align:right;appearance:none;}
+.input-wrap select{direction:rtl;text-align:right;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1L5 5L9 1' stroke='%23156b42' stroke-width='1.5' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:left 14px center;padding-left:34px;}
+.input-wrap input:focus,.input-wrap select:focus{border-color:var(--brand-600);background:#fff;box-shadow:0 0 0 3px rgba(42,158,94,.12);}
+.input-unit{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:var(--brand-700);pointer-events:none;font-family:var(--font-display);}
+.input-wrap select+.input-unit{display:none;}
 
-  .benef-field label { display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.8px; }
-  .benef-field input, .benef-field select {
-    width:100%;padding:9px 12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;
-    color:var(--primary);background:var(--card);border:1.5px solid var(--border);
-    border-radius:6px;outline:none;transition:border-color .2s;
-  }
-  .benef-field input:focus, .benef-field select:focus { border-color:var(--gold); }
+.stepper{display:flex;align-items:stretch;background:var(--brand-50);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;transition:all .2s;}
+.stepper:focus-within{border-color:var(--brand-600);box-shadow:0 0 0 3px rgba(42,158,94,.12);}
+.stepper button{width:44px;background:none;border:none;font-size:20px;color:var(--brand-700);cursor:pointer;font-weight:300;transition:background .15s;flex-shrink:0;}
+.stepper button:hover{background:rgba(42,158,94,.1);}
+.stepper input{flex:1;text-align:center;border:none;background:none;font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--brand-800);outline:none;padding:0;min-width:0;}
 
-  .benef-status {
-    margin-top:10px;padding:7px 12px;border-radius:6px;font-size:11px;
-    font-family:'Tajawal',sans-serif;display:flex;align-items:center;gap:6px;
-  }
-  .benef-status.eligible { background:rgba(46,125,99,.1);color:var(--green);border:1px solid rgba(46,125,99,.25); }
-  .benef-status.ineligible { background:rgba(192,57,43,.08);color:var(--red);border:1px solid rgba(192,57,43,.2); }
+.toggle{border:1px dashed var(--border);border-radius:10px;overflow:hidden;margin-top:18px;}
+.toggle-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none;background:var(--brand-50);transition:background .15s;}
+.toggle-head:hover{background:var(--brand-100);}
+.toggle-head .th-label{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;}
+.toggle-arrow{font-size:11px;color:var(--brand-700);transition:transform .25s;}
+.toggle-arrow.open{transform:rotate(180deg);}
+.toggle-body{display:none;padding:18px;}
+.toggle-body.open{display:block;}
 
-  /* Add buttons */
-  .add-buttons { display:flex;flex-wrap:wrap;gap:8px;margin-top:14px; }
-  .add-btn {
-    display:flex;align-items:center;gap:6px;padding:8px 14px;
-    background:none;border:1.5px solid var(--border);border-radius:8px;
-    font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;color:var(--muted);
-    cursor:pointer;transition:all .15s;
-  }
-  .add-btn:hover { border-color:var(--gold);color:var(--primary);background:rgba(200,148,42,.06); }
-  .add-btn .plus { font-size:16px;color:var(--gold); }
+.btn{width:100%;padding:14px 18px;margin-top:20px;font-family:var(--font-display);font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;letter-spacing:.2px;}
+.btn-primary{background:linear-gradient(135deg,var(--brand-800),var(--brand-600));box-shadow:0 4px 12px rgba(15,85,56,.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,85,56,.35);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));box-shadow:0 4px 12px rgba(165,130,47,.25);}
+.btn-gold:hover{box-shadow:0 8px 20px rgba(165,130,47,.35);transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
 
-  /* Eligible count */
-  .eligible-summary {
-    display:flex;align-items:center;gap:8px;margin-top:10px;
-    padding:10px 14px;background:rgba(26,58,92,.05);border-radius:8px;
-    font-size:12px;color:var(--primary);font-family:'Tajawal',sans-serif;
-  }
-  .eligible-num { font-weight:900;font-size:18px;color:var(--primary); }
+.result{display:none;margin-top:18px;animation:fadeIn .4s ease;}
+.result.show{display:block;}
+.result-header{border-radius:14px 14px 0 0;padding:22px 26px;position:relative;overflow:hidden;}
+.rh-green{background:linear-gradient(135deg,var(--brand-800),var(--brand-600));}
+.rh-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));}
+.result-header::before{content:'';position:absolute;top:-30%;right:-10%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);}
+.rh-lbl{font-family:var(--font-display);font-size:10px;color:rgba(255,255,255,.7);letter-spacing:2px;text-transform:uppercase;position:relative;}
+.rh-sub{font-size:14px;color:rgba(255,255,255,.95);margin-top:4px;font-weight:500;position:relative;}
+.result-body{background:#fff;border:1px solid var(--border);border-top:none;box-shadow:var(--shadow-lg);}
+.r-row{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;border-bottom:1px solid var(--border-soft);transition:background .15s;}
+.r-row:last-child{border-bottom:none;}
+.r-row:hover{background:var(--brand-50);}
+.r-label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:9px;}
+.r-ico{width:28px;height:28px;border-radius:7px;background:var(--brand-100);color:var(--brand-700);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.r-value{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ink);direction:ltr;}
+.r-value .unit{font-size:10px;font-weight:500;color:var(--muted);margin-right:4px;}
+.r-row.highlight{background:linear-gradient(90deg,var(--brand-50),var(--brand-100));border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.r-row.highlight .r-value{font-size:19px;color:var(--brand-700);}
+.r-row.final{background:linear-gradient(135deg,var(--brand-800),var(--brand-600));border-radius:0 0 13px 13px;}
+.r-row.final.gold-f{background:linear-gradient(135deg,var(--gold-dark),var(--gold));}
+.r-row.final .r-label{color:rgba(255,255,255,.85);font-size:14px;font-weight:600;}
+.r-row.final .r-ico{background:rgba(255,255,255,.18);color:#fff;}
+.r-row.final .r-value{font-size:24px;color:var(--gold-light);}
+.r-row.final.gold-f .r-value{color:#fff;}
 
-  /* Calc btn */
-  .calc-btn {
-    width:100%;padding:17px;background:var(--primary);color:#fff;border:none;
-    border-radius:10px;font-family:'Cairo',sans-serif;font-size:17px;font-weight:700;
-    cursor:pointer;transition:transform .15s,box-shadow .2s,background .2s;
-    display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;
-  }
-  .calc-btn::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(200,148,42,.15)); }
-  .calc-btn:hover { background:#0f2640;box-shadow:0 8px 24px rgba(26,58,92,.3);transform:translateY(-1px); }
-  .calc-btn:active { transform:translateY(0); }
+.notice{display:none;margin:10px 26px;padding:10px 14px;border-radius:8px;font-size:12px;align-items:center;gap:8px;line-height:1.5;}
+.notice.show{display:flex;}
+.notice-info{background:var(--brand-100);color:var(--brand-800);border:1px solid rgba(21,107,66,.2);}
+.notice-warn{background:#fef5e7;color:var(--amber);border:1px solid #f9d9a3;}
+.notice-error{background:#fef2f2;color:var(--red);border:1px solid #fca5a5;}
 
-  /* Results */
-  .results { display:none;animation:fadeUp .5s ease both; }
-  .results.visible { display:block; }
-  .result-header { background:var(--primary);border-radius:12px 12px 0 0;padding:22px 26px;color:#fff; }
-  .result-header-title { font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px; }
-  .result-header-sub { font-size:13px;color:var(--gold);font-family:'Tajawal',sans-serif; }
-  .result-body {
-    background:var(--card);border:1px solid var(--border);border-top:none;
-    border-radius:0 0 12px 12px;padding:8px 0;box-shadow:0 8px 32px rgba(26,58,92,.1);
-  }
-  .result-row {
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 26px;border-bottom:1px solid rgba(214,207,192,.5);transition:background .15s;
-  }
-  .result-row:last-child { border-bottom:none; }
-  .result-row:hover { background:rgba(200,148,42,.04); }
-  .result-row-label { font-size:13px;color:var(--muted);font-family:'Tajawal',sans-serif;display:flex;align-items:center;gap:8px; }
-  .result-row-label .icon { width:26px;height:26px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0; }
-  .result-row-value { font-size:17px;font-weight:700;color:var(--primary);direction:ltr; }
-  .result-row-value .unit { font-size:10px;font-weight:600;color:var(--muted);margin-right:4px; }
-  .result-row.highlight { background:linear-gradient(135deg,rgba(26,58,92,.04),rgba(200,148,42,.06)); }
-  .result-row.highlight .result-row-value { font-size:20px;color:var(--accent2); }
-  .result-row.grand-total { background:var(--primary);border-radius:0 0 11px 11px; }
-  .result-row.grand-total .result-row-label { color:rgba(255,255,255,.8);font-size:14px;font-weight:600; }
-  .result-row.grand-total .result-row-label .icon { background:rgba(255,255,255,.15); }
-  .result-row.grand-total .result-row-value { font-size:24px;color:var(--gold); }
+.elig-box{margin-top:14px;}
+.elig{padding:12px 16px;border-radius:9px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;}
+.elig-yes{background:var(--brand-100);color:var(--brand-800);border:1.5px solid rgba(42,158,94,.3);}
+.elig-no{background:#fef2f2;color:var(--red);border:1.5px solid #fca5a5;}
+.elig-partial{background:#fef5e7;color:var(--amber);border:1.5px solid #f9d9a3;}
 
-  /* Beneficiary result table */
-  .benef-result-section { padding:16px 26px; border-bottom:1px solid rgba(214,207,192,.5); }
-  .benef-result-title { font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px; }
-  .benef-result-table { width:100%;border-collapse:collapse;font-size:12px; }
-  .benef-result-table th { text-align:right;padding:6px 10px;background:rgba(26,58,92,.05);color:var(--muted);font-weight:600;font-family:'Tajawal',sans-serif; }
-  .benef-result-table td { padding:8px 10px;border-bottom:1px solid rgba(214,207,192,.3);color:var(--primary);font-weight:600; }
-  .benef-result-table tr:last-child td { border-bottom:none; }
-  .badge-elig { background:rgba(46,125,99,.1);color:var(--green);padding:2px 10px;border-radius:10px;font-size:11px; }
-  .badge-inelig { background:rgba(192,57,43,.08);color:var(--red);padding:2px 10px;border-radius:10px;font-size:11px; }
+.benef-list{display:flex;flex-direction:column;gap:10px;}
+.benef-item{background:var(--brand-50);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.bi-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.bi-badge{font-family:var(--font-display);font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;background:var(--brand-700);color:#fff;}
+.bi-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:3px 7px;border-radius:5px;transition:all .15s;}
+.bi-remove:hover{color:var(--red);background:#fef2f2;}
+.bi-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:460px){.bi-fields{grid-template-columns:1fr;}}
+.bf label{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.7px;font-family:var(--font-display);}
+.bf input,.bf select{width:100%;padding:8px 10px;font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--ink);background:#fff;border:1px solid var(--border);border-radius:6px;outline:none;transition:border-color .2s;}
+.bf input:focus,.bf select:focus{border-color:var(--brand-600);}
+.bi-status{margin-top:9px;padding:7px 11px;border-radius:6px;font-size:11px;display:flex;align-items:center;gap:6px;line-height:1.4;}
+.bs-ok{background:var(--brand-100);color:var(--brand-800);border:1px solid rgba(42,158,94,.25);}
+.bs-no{background:#fef2f2;color:var(--red);border:1px solid #fca5a5;}
+.bs-wait{background:#fef5e7;color:var(--amber);border:1px solid #f9d9a3;}
 
-  .min-notice {
-    display:none;align-items:center;gap:8px;
-    background:rgba(46,125,99,.08);border:1px solid rgba(46,125,99,.3);
-    border-radius:8px;padding:9px 14px;margin:10px 26px;
-    font-size:11px;color:var(--green);font-family:'Tajawal',sans-serif;
-  }
-  .min-notice.show { display:flex; }
+.add-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.add-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all .15s;}
+.add-btn:hover{border-color:var(--brand-600);color:var(--brand-700);background:var(--brand-50);}
+.add-btn .plus{color:var(--brand-600);font-weight:700;}
+.elig-sum{display:none;margin-top:12px;padding:11px 14px;background:var(--brand-50);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--ink-2);align-items:center;gap:8px;}
+.elig-sum.show{display:flex;}
+.elig-sum-num{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--brand-700);}
 
-  /* Formula card */
-  .formula-card {
-    background:rgba(26,58,92,.04);border:1px dashed var(--border);border-radius:10px;
-    padding:18px 22px;margin-bottom:20px;animation:fadeUp .6s .1s ease both;
-  }
-  .formula-title { font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px; }
-  .formula-step { display:flex;gap:10px;font-size:12px;color:var(--muted);font-family:'Tajawal',sans-serif;margin-bottom:5px;align-items:flex-start; }
-  .formula-step .num { width:18px;height:18px;background:var(--gold);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px; }
+.live-card{margin-top:20px;background:linear-gradient(135deg,var(--brand-50) 0%,var(--brand-100) 100%);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.live-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;text-align:center;}
+.lg-lbl{font-family:var(--font-display);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.lg-val{font-family:var(--font-display);font-size:24px;font-weight:700;direction:ltr;margin-bottom:2px;color:var(--ink);}
+.lg-val.success{color:var(--brand-700);}
+.lg-val.danger{color:var(--red);}
+.lg-unit{font-size:10px;color:var(--muted);}
 
-  .reset-btn {
-    display:flex;align-items:center;justify-content:center;gap:6px;
-    margin:14px auto 0;background:none;border:1px solid var(--border);border-radius:6px;
-    padding:8px 20px;font-family:'Cairo',sans-serif;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;
-  }
-  .reset-btn:hover { border-color:var(--gold);color:var(--gold); }
-  .legal-note { text-align:center;font-size:11px;color:var(--muted);font-family:'Tajawal',sans-serif;line-height:1.8;padding:0 10px;margin-top:28px;animation:fadeUp .6s .2s ease both; }
-  .legal-note a { color:var(--gold);text-decoration:none; }
+.reset-btn{display:inline-flex;align-items:center;gap:6px;margin:14px auto 0;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:7px;font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--brand-600);color:var(--brand-700);}
 
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)} }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
-  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,148,42,.3)}50%{box-shadow:0 0 0 8px rgba(200,148,42,0)} }
-  .pulsing { animation:pulse 1.5s ease-in-out 3; }
+.info-table{margin-top:20px;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.info-table-head{padding:14px 20px;background:linear-gradient(135deg,var(--brand-800),var(--brand-700));color:#fff;}
+.info-table-head h4{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:.3px;}
+.info-table table{width:100%;border-collapse:collapse;font-size:12px;}
+.info-table th{text-align:right;padding:10px 16px;background:var(--brand-50);color:var(--ink-2);font-weight:600;font-family:var(--font-display);border-bottom:1px solid var(--border);font-size:11px;letter-spacing:.3px;}
+.info-table td{padding:9px 16px;border-bottom:1px solid var(--border-soft);color:var(--ink-2);}
+.info-table tr:last-child td{border-bottom:none;}
+.info-table tr:hover td{background:var(--brand-50);}
 
-  /* two col grid */
-  .grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
-  @media(max-width:520px){ .grid-2{grid-template-columns:1fr;} }
+.pct-display{margin-top:8px;display:flex;align-items:center;gap:8px;}
+.pct-pill{background:var(--brand-700);color:#fff;font-family:var(--font-display);font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;}
+.pct-text{font-size:11px;color:var(--muted);}
+
+.site-footer{background:var(--brand-900);color:rgba(255,255,255,.75);padding:40px 20px 24px;margin-top:60px;border-top:3px solid var(--gold);}
+.footer-inner{max-width:1200px;margin:0 auto;text-align:center;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,.1);}
+.f-emblem{width:64px;height:64px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+.f-emblem img{width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1) opacity(.9);}
+.f-emblem .fb{font-size:40px;}
+.f-brand h3{font-family:var(--font-display);font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;}
+.f-brand p{font-size:12px;color:rgba(255,255,255,.6);line-height:1.7;max-width:500px;margin:0 auto 16px;}
+.f-links{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;margin-top:16px;}
+.f-links a{font-size:12px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .15s;}
+.f-links a:hover{color:var(--gold-light);}
+.f-bottom{max-width:1200px;margin:0 auto;padding-top:20px;font-size:11px;color:rgba(255,255,255,.5);text-align:center;}
+
+@media(max-width:768px){
+  .header-top-inner{font-size:11px;}
+  .ht-left a:not(:first-child){display:none;}
+  .brand-emblem{width:75px;height:75px;}
+  .brand-ar{font-size:19px;}
+  .hero{padding:44px 16px 80px;}
+  .sec-head{padding:18px 20px;flex-wrap:wrap;}
+  .formula{padding:16px 20px;}
+  .card{padding:20px;}
+  .r-row{padding:12px 18px;}
+  .notice{margin:10px 18px;}
+  .live-grid{grid-template-columns:1fr;gap:14px;}
+}
+@media(max-width:420px){
+  .sec-info h2{font-size:17px;}
+  .lg-val{font-size:20px;}
+  .hc-title{font-size:12px;}
+  .nav-link{padding:8px 12px;font-size:12px;}
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(42,158,94,.3);}50%{box-shadow:0 0 0 10px rgba(42,158,94,0);}}
+.pulsing{animation:pulse 1.8s ease 2;}
 </style>
 </head>
 <body>
-<div class="wrapper">
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-badge">صندوق الحماية الاجتماعية — سلطنة عُمان</div>
-    <h1>حاسبة <span>معاش الوفاة</span></h1>
-    <div class="ornament">
-      <div class="ornament-line"></div>
-      <div class="ornament-diamond"></div>
-      <div class="ornament-line"></div>
-    </div>
-    <p>المرسوم السلطاني رقم 52/2023 • المواد 111–114</p>
-  </div>
-
-  <!-- Formula -->
-  <div class="formula-card">
-    <div class="formula-title">آلية الاحتساب</div>
-    <div class="formula-step"><div class="num">١</div><div>تُحدَّد نسبة الاستحقاق: مستحق واحد → 60٪ | اثنان → 80٪ | ثلاثة فأكثر → 100٪</div></div>
-    <div class="formula-step"><div class="num">٢</div><div>الإجمالي المبدئي = المعاش الأساسي × النسبة</div></div>
-    <div class="formula-step"><div class="num">٣</div><div>نصيب الفرد = الإجمالي ÷ عدد المستحقين المؤهَّلين</div></div>
-    <div class="formula-step"><div class="num">٤</div><div>الحد الأدنى لنصيب الفرد 230 ر.ع — يُرفع تلقائياً إن قلّ</div></div>
-    <div class="formula-step"><div class="num">٥</div><div>الإجمالي النهائي = نصيب الفرد المعدَّل × عدد المستحقين المؤهَّلين</div></div>
-  </div>
-
-  <!-- Main inputs -->
-  <div class="card">
-    <div class="card-title">المعاش الأساسي وعدد المستحقين</div>
-
-    <div class="grid-2">
-      <div class="input-group" style="margin-bottom:0">
-        <label>المعاش الأساسي <span>(ر.ع)</span></label>
-        <div class="input-wrap">
-          <input type="number" id="basicPension" placeholder="0.000" min="0" step="0.001" inputmode="decimal" oninput="syncCount()"/>
-          <span class="input-unit">ر.ع</span>
-        </div>
+<header class="site-header">
+  <div class="header-top">
+    <div class="header-top-inner">
+      <div class="ht-left">
+        <a href="https://www.spf.gov.om" target="_blank">🌐 الموقع الرسمي</a>
+        <a href="mailto:info@spf.gov.om">✉️ info@spf.gov.om</a>
+        <a href="tel:80077777">📞 80077777</a>
       </div>
-
-      <div class="input-group" style="margin-bottom:0">
-        <label>عدد المستحقين <span>(إجمالي)</span></label>
-        <div class="stepper">
-          <button type="button" onclick="changeCount(-1)">−</button>
-          <input type="number" id="beneficiaryCount" value="1" min="1" max="20" readonly/>
-          <button type="button" onclick="changeCount(1)">+</button>
-        </div>
-        <div class="pct-preview">
-          <div class="pct-badge" id="pctBadge">60٪</div>
-          <div class="pct-label" id="pctLabel">مستحق واحد</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Detailed beneficiaries toggle -->
-    <div class="toggle-section" style="margin-top:20px;">
-      <div class="toggle-header" onclick="toggleDetails()">
-        <div class="toggle-header-text">
-          <span>👥</span>
-          <span>تفاصيل المستحقين (اختياري) — للتحقق من الأهلية تلقائياً</span>
-        </div>
-        <span class="toggle-arrow" id="toggleArrow">▼</span>
-      </div>
-      <div class="toggle-body" id="toggleBody">
-
-        <div class="benef-list" id="benefList"></div>
-
-        <div class="add-buttons">
-          <button class="add-btn" onclick="addBenef('widow')"><span class="plus">+</span> أرملة / زوج</button>
-          <button class="add-btn" onclick="addBenef('son')"><span class="plus">+</span> ابن ذكر</button>
-          <button class="add-btn" onclick="addBenef('daughter')"><span class="plus">+</span> بنت</button>
-          <button class="add-btn" onclick="addBenef('disabled')"><span class="plus">+</span> معاق/ة</button>
-        </div>
-
-        <div class="eligible-summary" id="eligSummary" style="display:none">
-          <span>عدد المستحقين المؤهَّلين تلقائياً:</span>
-          <span class="eligible-num" id="eligNum">0</span>
-          <span style="font-size:11px;color:var(--muted)">— سيُستخدم هذا العدد في الحساب</span>
-        </div>
-
-      </div>
+      <div style="font-size:11px;opacity:.85;">سلطنة عُمان</div>
     </div>
   </div>
-
-  <button class="calc-btn" onclick="calculate()">
-    <span>⟳</span> احسب معاش الوفاة
-  </button>
-
-  <!-- Results -->
-  <div class="results" id="results" style="margin-top:24px;">
-    <div class="result-header">
-      <div class="result-header-title">نتائج الاحتساب</div>
-      <div class="result-header-sub" id="resultSummary">—</div>
+  <div class="header-main">
+    <a href="#" class="brand">
+      <div class="brand-emblem">
+        <img src="logo.png" alt="شعار صندوق الحماية الاجتماعية"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+        <div class="emblem-fallback">🛡️</div>
+      </div>
+      <div class="brand-text">
+        <div class="brand-ar">صندوق الحماية الاجتماعية</div>
+        <div class="brand-en">Social Protection Fund · Sultanate of Oman</div>
+        <div class="brand-tag">سَنَد الفرد والكل</div>
+      </div>
+    </a>
+    <div class="header-nav-wrap">
+      <nav class="main-nav">
+        <a class="nav-link active" onclick="showSec('pension',this)">🏛️ معاش التقاعد</a>
+        <a class="nav-link" onclick="showSec('elderly',this)">👴 كبار السن</a>
+        <a class="nav-link" onclick="showSec('death',this)">🕊️ معاش الوفاة</a>
+        <a class="nav-link" onclick="showSec('family',this)">👨‍👩‍👧 دعم الأسرة</a>
+      </nav>
     </div>
-    <div class="result-body">
+  </div>
+</header>
 
-      <!-- Beneficiary detail table (if used) -->
-      <div class="benef-result-section" id="benefResultSection" style="display:none">
-        <div class="benef-result-title">تفاصيل أهلية المستحقين</div>
-        <table class="benef-result-table">
-          <thead>
-            <tr>
-              <th>الاسم</th>
-              <th>الفئة</th>
-              <th>السبب</th>
-              <th>الأهلية</th>
-            </tr>
-          </thead>
-          <tbody id="benefResultBody"></tbody>
+<section class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span><span>المرسوم السلطاني 52/2023 · اللائحة ر/7/2023</span></div>
+    <h1>حاسبة <span class="accent">المنافع الاجتماعية</span></h1>
+    <p class="hero-sub">احسب منافعك بدقة ودون تعقيد وفق قانون الحماية الاجتماعية في سلطنة عُمان — أربع حاسبات رسمية في مكان واحد</p>
+    <div class="hero-cards">
+      <div class="hc" onclick="showSec('pension',null)"><div class="hc-icon">🏛️</div><div class="hc-title">معاش التقاعد</div></div>
+      <div class="hc" onclick="showSec('elderly',null)"><div class="hc-icon">👴</div><div class="hc-title">كبار السن</div></div>
+      <div class="hc" onclick="showSec('death',null)"><div class="hc-icon">🕊️</div><div class="hc-title">معاش الوفاة</div></div>
+      <div class="hc" onclick="showSec('family',null)"><div class="hc-icon">👨‍👩‍👧</div><div class="hc-title">دعم الأسرة</div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+  <section class="calc-section active" id="sec-pension">
+    <div class="sec-head"><div class="sec-icon i-pension">🏛️</div><div class="sec-info"><h2>حاسبة معاش التقاعد</h2><p>الضمان الأول (تأمين كبار السن والعجز والوفاة) + الضمان الثاني (الادخار)</p></div><div class="sec-law">م.73</div></div>
+    <div class="formula"><div class="formula-lbl">معادلة الاحتساب</div><div class="formula-steps">
+      <div class="fstep"><div class="fstep-n">١</div><div>معاش الضمان الأول = 2% × متوسط الراتب × سنوات الخدمة الفعلية</div></div>
+      <div class="fstep"><div class="fstep-n">٢</div><div>الحد الأدنى: 115 ر.ع · سقف أجر الاشتراك: 3,000 ر.ع شهرياً</div></div>
+      <div class="fstep"><div class="fstep-n">٣</div><div>التقاعد المبكر: خصم 5% للسنوات الخمس الأولى ثم 1% لما بعدها</div></div>
+      <div class="fstep"><div class="fstep-n">٤</div><div>الضمان الثاني = رصيد الادخار (9% من صاحب العمل) + عوائد الاستثمار</div></div>
+    </div></div>
+    <div class="card">
+      <div class="card-title">بيانات الوظيفة والراتب</div>
+      <div class="grid-2">
+        <div class="field"><label>متوسط الراتب الشهري <span class="hint">(ر.ع)</span></label><div class="input-wrap"><input type="number" id="p_sal" placeholder="0.000" min="0" step="0.001" inputmode="decimal" oninput="pCheckElig()"/><span class="input-unit">ر.ع</span></div></div>
+        <div class="field"><label>سنوات الخدمة الفعلية</label><div class="input-wrap"><input type="number" id="p_yrs" placeholder="0" min="0" max="45" step="0.5" oninput="pCheckElig()"/><span class="input-unit">سنة</span></div></div>
+        <div class="field"><label>العمر الحالي <span class="hint">(سنة)</span></label><div class="input-wrap"><input type="number" id="p_age" placeholder="0" min="18" max="80" oninput="pCheckElig()"/><span class="input-unit">سنة</span></div></div>
+        <div class="field"><label>نوع التقاعد</label><div class="input-wrap"><select id="p_type" onchange="pCheckElig()"><option value="normal">تقاعد عادي — سن 60</option><option value="early">تقاعد مبكر مع خصم</option><option value="early_nc">تقاعد مبكر بلا خصم — 30 سنة</option><option value="disability">عجز / إصابة عمل — 75%</option></select></div></div>
+      </div>
+      <div class="elig-box" id="p_elig_box"></div>
+      <div class="toggle">
+        <div class="toggle-head" onclick="togSec('p_sav_b')"><span class="th-label">💰 الضمان الثاني — الادخار (اختياري)</span><span class="toggle-arrow" id="ta_p_sav_b">▼</span></div>
+        <div class="toggle-body" id="p_sav_b"><div class="grid-2">
+          <div class="field"><label>رصيد الادخار المتراكم <span class="hint">(ر.ع)</span></label><div class="input-wrap"><input type="number" id="p_sav" placeholder="0.000" min="0" step="0.001"/><span class="input-unit">ر.ع</span></div></div>
+          <div class="field"><label>عائد الاستثمار المتوقع <span class="hint">(%)</span></label><div class="input-wrap"><input type="number" id="p_ret" placeholder="5" min="0" max="20" step="0.1" value="5"/><span class="input-unit">%</span></div></div>
+        </div></div>
+      </div>
+      <button class="btn btn-primary" onclick="calcPension()">⚖️ احسب معاش التقاعد</button>
+    </div>
+    <div class="result" id="p_res">
+      <div class="result-header rh-green"><div class="rh-lbl">نتائج معاش التقاعد</div><div class="rh-sub" id="p_rs">—</div></div>
+      <div class="result-body">
+        <div class="r-row"><div class="r-label"><div class="r-ico">💵</div>متوسط الراتب</div><div class="r-value"><span class="unit">ر.ع</span><span id="p_r_sal">—</span></div></div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">📅</div>سنوات الخدمة</div><div class="r-value"><span id="p_r_yrs">—</span></div></div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">📊</div>نسبة الاستحقاق</div><div class="r-value"><span id="p_r_pct">—</span></div></div>
+        <div class="r-row" id="p_cut_row" style="display:none"><div class="r-label"><div class="r-ico">✂️</div>خصم التقاعد المبكر</div><div class="r-value" style="color:var(--red)"><span id="p_r_cut">—</span></div></div>
+        <div class="r-row highlight"><div class="r-label"><div class="r-ico">🏛️</div>معاش الضمان الأول</div><div class="r-value"><span class="unit">ر.ع</span><span id="p_r_pen">—</span></div></div>
+        <div class="r-row" id="p_sav2_row" style="display:none"><div class="r-label"><div class="r-ico">💰</div>رصيد الادخار مع العوائد</div><div class="r-value"><span class="unit">ر.ع</span><span id="p_r_sav2">—</span></div></div>
+        <div id="p_nmin" class="notice notice-warn"><span>⚠️</span><span>تم تطبيق الحد الأدنى (115 ر.ع) — المادة 74</span></div>
+        <div id="p_nmax" class="notice notice-warn"><span>⚠️</span><span>الراتب يتجاوز سقف الاشتراك (3,000 ر.ع) — الاحتساب بالسقف</span></div>
+        <div class="r-row final"><div class="r-label"><div class="r-ico">🎯</div>إجمالي معاش التقاعد الشهري</div><div class="r-value"><span class="unit" style="color:rgba(255,255,255,.5)">ر.ع</span><span id="p_r_tot">—</span></div></div>
+      </div>
+      <button class="reset-btn" onclick="resetSec('p_res')">↺ إعادة الحساب</button>
+    </div>
+  </section>
+
+  <section class="calc-section" id="sec-elderly">
+    <div class="sec-head"><div class="sec-icon i-elderly">👴</div><div class="sec-info"><h2>منفعة كبار السن</h2><p>115 ر.ع شهرياً للمستحقين مع شريحة الخفض التدريجي (أبريل 2026)</p></div><div class="sec-law">م.29</div></div>
+    <div class="formula"><div class="formula-lbl">قواعد الاستحقاق</div><div class="formula-steps">
+      <div class="fstep"><div class="fstep-n">١</div><div>عُماني/ة · عمر ≥ 60 سنة · إقامة مشروعة متواصلة في السلطنة</div></div>
+      <div class="fstep"><div class="fstep-n">٢</div><div>المنفعة ثابتة 115 ر.ع شهرياً — يجوز الجمع مع معاش التقاعد</div></div>
+      <div class="fstep"><div class="fstep-n">٣</div><div>دخل ≤ 1020 → كاملة | 1020–1250 → خفض تدريجي | ≥ 1250 → لا استحقاق</div></div>
+    </div></div>
+    <div class="card">
+      <div class="card-title">بيانات المستفيد</div>
+      <div class="grid-2">
+        <div class="field"><label>العمر <span class="hint">(سنة)</span></label><div class="input-wrap"><input type="number" id="e_age" placeholder="0" min="0" max="120" oninput="calcE()"/><span class="input-unit">سنة</span></div></div>
+        <div class="field"><label>الجنسية</label><div class="input-wrap"><select id="e_nat" onchange="calcE()"><option value="omani">عُماني/ة</option><option value="other">غير عُماني/ة</option></select></div></div>
+        <div class="field"><label>الدخل الشهري الحالي <span class="hint">(ر.ع)</span></label><div class="input-wrap"><input type="number" id="e_inc" placeholder="0.000" min="0" step="0.001" inputmode="decimal" oninput="calcE()"/><span class="input-unit">ر.ع</span></div></div>
+        <div class="field"><label>الإقامة في السلطنة</label><div class="input-wrap"><select id="e_res" onchange="calcE()"><option value="yes">نعم</option><option value="no">لا</option></select></div></div>
+      </div>
+      <div class="live-card">
+        <div class="live-grid">
+          <div><div class="lg-lbl">الشريحة</div><div class="lg-val" id="e_r_band" style="font-size:14px;color:var(--ink-2);">—</div></div>
+          <div><div class="lg-lbl">الدخل الشهري</div><div class="lg-val" id="e_r_inc">—</div><div class="lg-unit">ر.ع</div></div>
+          <div><div class="lg-lbl">المنفعة المستحقة</div><div class="lg-val success" id="e_r_ben">—</div><div class="lg-unit">ر.ع / شهر</div></div>
+        </div>
+        <div id="e_notice" class="notice notice-info show" style="margin:14px 0 0;"><span>ℹ️</span><span>أدخل البيانات للتحقق من الأهلية</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="calc-section" id="sec-death">
+    <div class="sec-head"><div class="sec-icon i-death">🕊️</div><div class="sec-info"><h2>حاسبة معاش الوفاة</h2><p>توزيع المعاش على المستحقين مع التحقق التلقائي من الأهلية</p></div><div class="sec-law">م.111-114</div></div>
+    <div class="formula"><div class="formula-lbl">آلية الاحتساب</div><div class="formula-steps">
+      <div class="fstep"><div class="fstep-n">١</div><div>نسبة الاستحقاق: مستحق واحد 60% · اثنان 80% · ثلاثة فأكثر 100%</div></div>
+      <div class="fstep"><div class="fstep-n">٢</div><div>الحد الأدنى لنصيب الفرد: الأقل بين 230 ر.ع أو المعاش قبل التوزيع</div></div>
+      <div class="fstep"><div class="fstep-n">٣</div><div>أول 6 أشهر من الوفاة: يُصرف 100% بصرف النظر عن عدد المستحقين</div></div>
+    </div></div>
+    <div class="card">
+      <div class="card-title">بيانات المعاش</div>
+      <div class="grid-2">
+        <div class="field"><label>المعاش الأساسي للمتوفى <span class="hint">(ر.ع)</span></label><div class="input-wrap"><input type="number" id="d_pen" placeholder="0.000" min="0" step="0.001" inputmode="decimal"/><span class="input-unit">ر.ع</span></div></div>
+        <div class="field"><label>عدد المستحقين <span class="hint">(إجمالي)</span></label>
+          <div class="stepper"><button type="button" onclick="chD(-1)">−</button><input type="number" id="d_cnt" value="1" min="1" max="20" readonly/><button type="button" onclick="chD(1)">+</button></div>
+          <div class="pct-display"><span class="pct-pill" id="d_pct_b">60٪</span><span class="pct-text" id="d_pct_l">مستحق واحد</span></div>
+        </div>
+      </div>
+      <div class="toggle">
+        <div class="toggle-head" onclick="togSec('d_bl')"><span class="th-label">👥 تفاصيل المستحقين (للتحقق التلقائي من الأهلية)</span><span class="toggle-arrow" id="ta_d_bl">▼</span></div>
+        <div class="toggle-body" id="d_bl">
+          <div class="benef-list" id="d_benef_list"></div>
+          <div class="add-row">
+            <button class="add-btn" onclick="addB('widow')"><span class="plus">+</span> أرملة/زوج</button>
+            <button class="add-btn" onclick="addB('son')"><span class="plus">+</span> ابن</button>
+            <button class="add-btn" onclick="addB('daughter')"><span class="plus">+</span> بنت</button>
+            <button class="add-btn" onclick="addB('disabled')"><span class="plus">+</span> معاق/ة</button>
+            <button class="add-btn" onclick="addB('parent')"><span class="plus">+</span> والد/والدة</button>
+          </div>
+          <div class="elig-sum" id="d_elig_sum"><span>المستحقون المؤهَّلون تلقائياً:</span><span class="elig-sum-num" id="d_elig_n">0</span><span style="font-size:11px;color:var(--muted);">— سيُستخدم في الحساب</span></div>
+        </div>
+      </div>
+      <button class="btn btn-gold" onclick="calcDeath()">🕊️ احسب معاش الوفاة</button>
+    </div>
+    <div class="result" id="d_res">
+      <div class="result-header rh-gold"><div class="rh-lbl">نتائج معاش الوفاة</div><div class="rh-sub" id="d_rs">—</div></div>
+      <div class="result-body">
+        <div id="d_tbl_sec" style="display:none;padding:14px 22px;border-bottom:1px solid var(--border-soft);">
+          <div style="font-family:var(--font-display);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">تفاصيل المستحقين</div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:var(--brand-50);"><th style="text-align:right;padding:6px 10px;color:var(--muted);font-family:var(--font-display);font-size:11px;">الفئة</th><th style="text-align:right;padding:6px 10px;color:var(--muted);font-family:var(--font-display);font-size:11px;">السبب</th><th style="text-align:right;padding:6px 10px;color:var(--muted);font-family:var(--font-display);font-size:11px;">الأهلية</th></tr></thead><tbody id="d_tbl_body"></tbody></table>
+        </div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">💵</div>المعاش الأساسي</div><div class="r-value"><span class="unit">ر.ع</span><span id="d_r_base">—</span></div></div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">👥</div>المستحقون المؤهَّلون</div><div class="r-value"><span id="d_r_cnt">—</span></div></div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">📊</div>نسبة الاستحقاق</div><div class="r-value"><span id="d_r_pct">—</span></div></div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">🧮</div>الإجمالي المبدئي</div><div class="r-value"><span class="unit">ر.ع</span><span id="d_r_prel">—</span></div></div>
+        <div class="r-row"><div class="r-label"><div class="r-ico">👤</div>نصيب الفرد قبل الحد الأدنى</div><div class="r-value"><span class="unit">ر.ع</span><span id="d_r_sb">—</span></div></div>
+        <div id="d_nmin" class="notice notice-warn"><span>⚠️</span><span>نصيب الفرد أقل من 230 ر.ع — تم الرفع تلقائياً (المادة 113)</span></div>
+        <div class="r-row highlight"><div class="r-label"><div class="r-ico">✅</div>نصيب الفرد بعد التعديل</div><div class="r-value"><span class="unit">ر.ع</span><span id="d_r_sa">—</span></div></div>
+        <div class="r-row final gold-f"><div class="r-label"><div class="r-ico">💰</div>إجمالي المبلغ النهائي للأسرة</div><div class="r-value"><span id="d_r_grand">—</span></div></div>
+      </div>
+      <button class="reset-btn" onclick="resetSec('d_res')">↺ إعادة الحساب</button>
+    </div>
+  </section>
+
+  <section class="calc-section" id="sec-family">
+    <div class="sec-head"><div class="sec-icon i-family">👨‍👩‍👧</div><div class="sec-info"><h2>منفعة دعم دخل الأسرة</h2><p>القيمة المستهدفة = 115 × √(عدد الأفراد) — معادلة المادة 42</p></div><div class="sec-law">م.42</div></div>
+    <div class="formula"><div class="formula-lbl">معادلة الاحتساب</div><div class="formula-steps">
+      <div class="fstep"><div class="fstep-n">١</div><div>القيمة المستهدفة = 115 × √(عدد الأفراد) ← مثال: 4 أفراد → 230 ر.ع</div></div>
+      <div class="fstep"><div class="fstep-n">٢</div><div>المنفعة الشهرية = القيمة المستهدفة − إجمالي دخل الأسرة الفعلي</div></div>
+      <div class="fstep"><div class="fstep-n">٣</div><div>الحد الأدنى: 15 ر.ع (فرد واحد) · 25 ر.ع (اثنان فأكثر)</div></div>
+      <div class="fstep"><div class="fstep-n">٤</div><div>إذا كانت المنفعة ≤ 0 → لا يوجد استحقاق</div></div>
+    </div></div>
+    <div class="card">
+      <div class="card-title">بيانات الأسرة</div>
+      <div class="grid-2">
+        <div class="field"><label>عدد أفراد الأسرة</label><div class="stepper"><button type="button" onclick="chF(-1)">−</button><input type="number" id="f_cnt" value="1" min="1" max="20" readonly/><button type="button" onclick="chF(1)">+</button></div></div>
+        <div class="field"><label>إجمالي دخل الأسرة الشهري <span class="hint">(ر.ع)</span></label><div class="input-wrap"><input type="number" id="f_inc" placeholder="0.000" min="0" step="0.001" inputmode="decimal" oninput="calcF()"/><span class="input-unit">ر.ع</span></div></div>
+        <div class="field"><label>هل يوجد عُماني في الأسرة؟</label><div class="input-wrap"><select id="f_omani" onchange="calcF()"><option value="yes">نعم</option><option value="no">لا</option></select></div></div>
+        <div class="field"><label>الإقامة في سلطنة عُمان</label><div class="input-wrap"><select id="f_res" onchange="calcF()"><option value="yes">نعم</option><option value="no">لا</option></select></div></div>
+      </div>
+      <div class="live-card">
+        <div class="live-grid">
+          <div><div class="lg-lbl">القيمة المستهدفة</div><div class="lg-val" id="f_target" style="color:#1a4971;">115.000</div><div class="lg-unit">ر.ع</div></div>
+          <div><div class="lg-lbl">دخل الأسرة</div><div class="lg-val" id="f_inc_s">0.000</div><div class="lg-unit">ر.ع</div></div>
+          <div><div class="lg-lbl">المنفعة المستحقة</div><div class="lg-val success" id="f_ben_s">115.000</div><div class="lg-unit">ر.ع / شهر</div></div>
+        </div>
+        <div id="f_nmin" class="notice notice-warn" style="margin:12px 0 0;"><span>⚠️</span><span>تم تطبيق الحد الأدنى (15/25 ر.ع)</span></div>
+        <div id="f_nzero" class="notice notice-error" style="margin:12px 0 0;"><span>❌</span><span>الدخل يساوي أو يتجاوز القيمة المستهدفة — لا استحقاق</span></div>
+        <div id="f_noman" class="notice notice-error" style="margin:12px 0 0;"><span>❌</span><span>يُشترط وجود فرد عُماني في الأسرة على الأقل</span></div>
+        <div id="f_nres" class="notice notice-error" style="margin:12px 0 0;"><span>❌</span><span>يُشترط الإقامة المشروعة المتواصلة في سلطنة عُمان</span></div>
+      </div>
+      <div class="info-table">
+        <div class="info-table-head"><h4>جدول القيم المستهدفة حسب عدد الأفراد</h4></div>
+        <table>
+          <thead><tr><th>عدد الأفراد</th><th>القيمة المستهدفة (ر.ع)</th><th>الحد الأدنى (ر.ع)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>115.000</td><td>15.000</td></tr>
+            <tr><td>2</td><td>162.635</td><td>25.000</td></tr>
+            <tr><td>3</td><td>199.186</td><td>25.000</td></tr>
+            <tr><td>4</td><td>230.000</td><td>25.000</td></tr>
+            <tr><td>6</td><td>281.690</td><td>25.000</td></tr>
+            <tr><td>9</td><td>345.000</td><td>25.000</td></tr>
+            <tr><td>12</td><td>398.372</td><td>25.000</td></tr>
+          </tbody>
         </table>
       </div>
-
-      <div class="result-row">
-        <div class="result-row-label"><div class="icon">📋</div>المعاش الأساسي</div>
-        <div class="result-row-value"><span class="unit">ر.ع</span><span id="r_basic">—</span></div>
-      </div>
-      <div class="result-row">
-        <div class="result-row-label"><div class="icon">👥</div>عدد المستحقين المؤهَّلين</div>
-        <div class="result-row-value"><span id="r_count">—</span></div>
-      </div>
-      <div class="result-row">
-        <div class="result-row-label"><div class="icon">📊</div>نسبة الاستحقاق</div>
-        <div class="result-row-value"><span id="r_pct">—</span></div>
-      </div>
-      <div class="result-row">
-        <div class="result-row-label"><div class="icon">🧮</div>الإجمالي المبدئي</div>
-        <div class="result-row-value"><span class="unit">ر.ع</span><span id="r_total_prelim">—</span></div>
-      </div>
-      <div class="result-row">
-        <div class="result-row-label"><div class="icon">👤</div>نصيب الفرد (قبل الحد الأدنى)</div>
-        <div class="result-row-value"><span class="unit">ر.ع</span><span id="r_share_before">—</span></div>
-      </div>
-
-      <div class="min-notice" id="minNotice">
-        <span>⚠️</span>
-        <span>نصيب الفرد أقل من الحد الأدنى (230 ر.ع) — تم الرفع تلقائياً وفق المادة (113)</span>
-      </div>
-
-      <div class="result-row highlight">
-        <div class="result-row-label"><div class="icon">✅</div>نصيب الفرد (بعد الحد الأدنى)</div>
-        <div class="result-row-value"><span class="unit">ر.ع</span><span id="r_share_after">—</span></div>
-      </div>
-      <div class="result-row grand-total">
-        <div class="result-row-label"><div class="icon">💰</div>إجمالي المبلغ النهائي للأسرة</div>
-        <div class="result-row-value"><span class="unit" style="color:rgba(255,255,255,.5)">ر.ع</span><span id="r_grand">—</span></div>
-      </div>
     </div>
-    <button class="reset-btn" onclick="resetForm()">↺ إعادة الحساب</button>
-  </div>
+  </section>
+</main>
 
-  <div class="legal-note">
-    هذه الحاسبة للاسترشاد فقط • <strong>المرسوم السلطاني 52/2023</strong> ولائحته التنفيذية ر/7/2023<br>
-    للاستفسارات الرسمية: <a href="https://www.spf.gov.om" target="_blank">صندوق الحماية الاجتماعية</a> — سلطنة عُمان
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="f-emblem">
+      <img src="logo.png" alt="شعار"
+           onerror="this.style.display='none';this.parentElement.innerHTML='<span class=&quot;fb&quot;>🛡️</span>';"/>
+    </div>
+    <div class="f-brand">
+      <h3>صندوق الحماية الاجتماعية</h3>
+      <p>الكيان الرسمي المسؤول عن تطبيق قانون الحماية الاجتماعية في سلطنة عُمان بموجب المرسوم السلطاني رقم 33/2021</p>
+    </div>
+    <div class="f-links">
+      <a href="https://www.spf.gov.om" target="_blank">🌐 الموقع الرسمي</a>
+      <a href="mailto:info@spf.gov.om">✉️ info@spf.gov.om</a>
+      <a href="tel:80077777">📞 80077777</a>
+      <a href="https://qanoon.om/p/2023/rd2023052/" target="_blank">📜 المرسوم 52/2023</a>
+    </div>
   </div>
-
-</div>
+  <div class="f-bottom">هذه الحاسبة للاسترشاد فقط — للاستفسار الرسمي يرجى التواصل مع الصندوق مباشرة · © 2026 جميع الحقوق محفوظة</div>
+</footer>
 
 <script>
-const MIN_SHARE = 230;
-let beneficiaries = [];
-let idCounter = 0;
-let detailsOpen = false;
-
-// ── Type definitions ──
-const TYPES = {
-  widow:    { label:'أرملة / زوج',  icon:'👩' },
-  son:      { label:'ابن ذكر',       icon:'👦' },
-  daughter: { label:'بنت',           icon:'👧' },
-  disabled: { label:'معاق/ة',        icon:'♿' }
-};
-
-// ── Toggle details panel ──
-function toggleDetails(){
-  detailsOpen = !detailsOpen;
-  document.getElementById('toggleBody').classList.toggle('open', detailsOpen);
-  document.getElementById('toggleArrow').classList.toggle('open', detailsOpen);
-}
-
-// ── Add beneficiary ──
-function addBenef(type){
-  const id = ++idCounter;
-  beneficiaries.push({ id, type, name:'', age:'', married:false, working:false, student:false, disabled:false });
-  renderBenefList();
-}
-
-// ── Remove beneficiary ──
-function removeBenef(id){
-  beneficiaries = beneficiaries.filter(b => b.id !== id);
-  renderBenefList();
-}
-
-// ── Update field ──
-function updateField(id, field, value){
-  const b = beneficiaries.find(b => b.id === id);
-  if(!b) return;
-  if(field === 'age') b.age = value === '' ? '' : parseInt(value);
-  else if(['married','working','student','disabled'].includes(field)) b[field] = value;
-  else b[field] = value;
-  renderBenefList();
-}
-
-// ── Check eligibility ──
-function checkEligibility(b){
-  if(b.type === 'disabled') return { eligible: true, reason: 'معاق/ة — لا يوجد حد عمري' };
-
-  if(b.type === 'widow'){
-    if(b.married)  return { eligible: false, reason: 'مُتزوِّج/ة مجدداً — يسقط الاستحقاق' };
-    return { eligible: true, reason: 'أرمل/ة غير متزوج/ة' };
-  }
-
-  const age = parseInt(b.age);
-  if(b.type === 'son'){
-    if(b.disabled) return { eligible: true, reason: 'معاق — بدون حد عمري' };
-    if(isNaN(age)) return { eligible: null, reason: 'يرجى إدخال العمر' };
-    if(age < 22)   return { eligible: true,  reason: `العمر ${age} سنة — أقل من 22` };
-    if(age <= 26 && b.student) return { eligible: true, reason: `طالب عمره ${age} — أقل من 26` };
-    if(age > 26)   return { eligible: false, reason: `العمر ${age} سنة — تجاوز الحد` };
-    return { eligible: false, reason: `العمر ${age} سنة — ليس طالباً` };
-  }
-
-  if(b.type === 'daughter'){
-    if(b.disabled) return { eligible: true,  reason: 'معاقة — بدون حد عمري' };
-    if(b.married)  return { eligible: false, reason: 'متزوجة — يسقط الاستحقاق' };
-    if(isNaN(age)) return { eligible: null,  reason: 'يرجى إدخال العمر' };
-    if(age <= 30)  return { eligible: true,  reason: `غير متزوجة • عمرها ${age} سنة` };
-    return { eligible: false, reason: `العمر ${age} تجاوز 30 سنة` };
-  }
-
-  return { eligible: null, reason: '—' };
-}
-
-// ── Count eligible ──
-function countEligible(){
-  if(beneficiaries.length === 0) return null;
-  return beneficiaries.filter(b => checkEligibility(b).eligible === true).length;
-}
-
-// ── Render list ──
-function renderBenefList(){
-  const list = document.getElementById('benefList');
-  list.innerHTML = '';
-
-  beneficiaries.forEach(b => {
-    const elig = checkEligibility(b);
-    const eligClass = elig.eligible === true ? 'eligible' : elig.eligible === false ? 'ineligible' : '';
-    const eligIcon  = elig.eligible === true ? '✅' : elig.eligible === false ? '❌' : '⏳';
-
-    let extraFields = '';
-
-    if(b.type === 'son'){
-      extraFields = `
-        <div class="benef-field">
-          <label>العمر (سنة)</label>
-          <input type="number" min="0" max="100" placeholder="مثال: 20"
-            value="${b.age}" oninput="updateField(${b.id},'age',this.value)"/>
-        </div>
-        <div class="benef-field">
-          <label>الحالة</label>
-          <select onchange="updateField(${b.id},'student',this.value==='student');updateField(${b.id},'disabled',this.value==='disabled')">
-            <option value="none" ${!b.student&&!b.disabled?'selected':''}>لا شيء</option>
-            <option value="student" ${b.student?'selected':''}>طالب</option>
-            <option value="disabled" ${b.disabled?'selected':''}>معاق</option>
-          </select>
-        </div>`;
-    } else if(b.type === 'daughter'){
-      extraFields = `
-        <div class="benef-field">
-          <label>العمر (سنة)</label>
-          <input type="number" min="0" max="100" placeholder="مثال: 25"
-            value="${b.age}" oninput="updateField(${b.id},'age',this.value)"/>
-        </div>
-        <div class="benef-field">
-          <label>الحالة</label>
-          <select onchange="updateField(${b.id},'married',this.value==='married');updateField(${b.id},'disabled',this.value==='disabled')">
-            <option value="none" ${!b.married&&!b.disabled?'selected':''}>غير متزوجة</option>
-            <option value="married" ${b.married?'selected':''}>متزوجة</option>
-            <option value="disabled" ${b.disabled?'selected':''}>معاقة</option>
-          </select>
-        </div>`;
-    } else if(b.type === 'widow'){
-      extraFields = `
-        <div class="benef-field">
-          <label>الحالة الزوجية</label>
-          <select onchange="updateField(${b.id},'married',this.value==='married')">
-            <option value="none" ${!b.married?'selected':''}>غير متزوج/ة</option>
-            <option value="married" ${b.married?'selected':''}>تزوَّج/ت مجدداً</option>
-          </select>
-        </div>
-        <div class="benef-field">
-          <label>الاسم (اختياري)</label>
-          <input type="text" placeholder="الاسم" value="${b.name}" oninput="updateField(${b.id},'name',this.value)"/>
-        </div>`;
-    } else if(b.type === 'disabled'){
-      extraFields = `
-        <div class="benef-field">
-          <label>الاسم (اختياري)</label>
-          <input type="text" placeholder="الاسم" value="${b.name}" oninput="updateField(${b.id},'name',this.value)"/>
-        </div>
-        <div class="benef-field">
-          <label>العمر (اختياري)</label>
-          <input type="number" min="0" max="100" placeholder="—" value="${b.age}" oninput="updateField(${b.id},'age',this.value)"/>
-        </div>`;
-    }
-
-    const nameLabel = b.name ? ` — ${b.name}` : '';
-
-    list.innerHTML += `
-      <div class="benef-item">
-        <div class="benef-item-header">
-          <div class="benef-type-badge">${TYPES[b.type].icon} ${TYPES[b.type].label}${nameLabel}</div>
-          <button class="benef-remove" onclick="removeBenef(${b.id})" title="حذف">✕</button>
-        </div>
-        <div class="benef-fields">${extraFields}</div>
-        <div class="benef-status ${eligClass}">${eligIcon} ${elig.reason}</div>
-      </div>`;
-  });
-
-  // Eligible summary
-  const eligCount = countEligible();
-  const summary = document.getElementById('eligSummary');
-  if(eligCount !== null){
-    summary.style.display = 'flex';
-    document.getElementById('eligNum').textContent = eligCount;
-    // Auto-sync stepper
-    if(eligCount > 0){
-      document.getElementById('beneficiaryCount').value = eligCount;
-      updatePctPreview();
-    }
-  } else {
-    summary.style.display = 'none';
-  }
-}
-
-// ── Stepper ──
-function changeCount(delta){
-  const input = document.getElementById('beneficiaryCount');
-  let val = parseInt(input.value) + delta;
-  if(val < 1) val = 1;
-  if(val > 20) val = 20;
-  input.value = val;
-  updatePctPreview();
-}
-
-function getPct(n){ return n===1?.60:n===2?.80:1; }
-function getPctLabel(n){
-  if(n===1) return ['60٪','مستحق واحد'];
-  if(n===2) return ['80٪','مستحقان اثنان'];
-  return ['100٪','ثلاثة مستحقين فأكثر'];
-}
-function updatePctPreview(){
-  const n = parseInt(document.getElementById('beneficiaryCount').value);
-  const [badge,label] = getPctLabel(n);
-  document.getElementById('pctBadge').textContent = badge;
-  document.getElementById('pctLabel').textContent = label;
-}
-function syncCount(){ /* just keep live */ }
-
-function fmt(n){ return n.toLocaleString('ar-OM',{minimumFractionDigits:3,maximumFractionDigits:3}); }
-
-// ── Calculate ──
-function calculate(){
-  const basicVal = parseFloat(document.getElementById('basicPension').value);
-  if(isNaN(basicVal)||basicVal<=0){
-    const inp = document.getElementById('basicPension');
-    inp.focus(); inp.style.borderColor='#c0392b';
-    setTimeout(()=>inp.style.borderColor='',1500);
-    return;
-  }
-
-  // Use eligible count if details entered, else stepper
-  const eligCount = countEligible();
-  const count = eligCount !== null && eligCount > 0 ? eligCount : parseInt(document.getElementById('beneficiaryCount').value);
-
-  const pct = getPct(count);
-  const totalPrelim = basicVal * pct;
-  const shareBefore = totalPrelim / count;
-  const shareAfter  = Math.max(shareBefore, MIN_SHARE);
-  const grandTotal  = shareAfter * count;
-  const minApplied  = shareBefore < MIN_SHARE;
-
-  // Fill results
-  document.getElementById('r_basic').textContent       = fmt(basicVal);
-  document.getElementById('r_count').textContent       = count;
-  document.getElementById('r_pct').textContent         = (pct*100).toFixed(0)+'٪';
-  document.getElementById('r_total_prelim').textContent= fmt(totalPrelim);
-  document.getElementById('r_share_before').textContent= fmt(shareBefore);
-  document.getElementById('r_share_after').textContent = fmt(shareAfter);
-  document.getElementById('r_grand').textContent       = fmt(grandTotal);
-  document.getElementById('minNotice').classList.toggle('show', minApplied);
-
-  // Beneficiary table
-  const section = document.getElementById('benefResultSection');
-  const tbody   = document.getElementById('benefResultBody');
-  if(beneficiaries.length > 0){
-    section.style.display = 'block';
-    tbody.innerHTML = beneficiaries.map(b => {
-      const e = checkEligibility(b);
-      const badge = e.eligible===true
-        ? '<span class="badge-elig">✅ مؤهَّل</span>'
-        : e.eligible===false
-          ? '<span class="badge-inelig">❌ غير مؤهَّل</span>'
-          : '<span style="color:var(--muted);font-size:11px">⏳ غير مكتمل</span>';
-      const name = b.name || (TYPES[b.type]?.label);
-      const age  = b.age !== '' && !isNaN(b.age) ? b.age+' سنة' : '—';
-      return `<tr>
-        <td>${name}</td>
-        <td>${TYPES[b.type].icon} ${TYPES[b.type].label}</td>
-        <td style="font-size:11px;color:var(--muted)">${e.reason}</td>
-        <td>${badge}</td>
-      </tr>`;
-    }).join('');
-  } else {
-    section.style.display = 'none';
-  }
-
-  // Summary text
-  const names = count===1?'مستحق واحد':count===2?'مستحقَين':count+' مستحقين';
-  document.getElementById('resultSummary').textContent =
-    `معاش ${fmt(basicVal)} ر.ع • ${names} • نسبة ${(pct*100).toFixed(0)}٪`;
-
-  const res = document.getElementById('results');
-  res.classList.add('visible');
-  res.classList.add('pulsing');
-  setTimeout(()=>res.classList.remove('pulsing'),4500);
-  res.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-// ── Reset ──
-function resetForm(){
-  document.getElementById('basicPension').value = '';
-  document.getElementById('beneficiaryCount').value = 1;
-  beneficiaries = []; idCounter = 0;
-  renderBenefList();
-  updatePctPreview();
-  document.getElementById('results').classList.remove('visible');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-// Enter key
-document.getElementById('basicPension').addEventListener('keydown',e=>{ if(e.key==='Enter') calculate(); });
+const fmt=(n,d=3)=>(+n).toLocaleString('ar-OM',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtN=n=>(+n).toLocaleString('ar-OM',{minimumFractionDigits:0,maximumFractionDigits:1});
+function showSec(id,el){document.querySelectorAll('.calc-section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-'+id).classList.add('active');document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');else{const i=['pension','elderly','death','family'].indexOf(id);if(i>=0)document.querySelectorAll('.nav-link')[i]?.classList.add('active');}document.querySelector('.main').scrollIntoView({behavior:'smooth',block:'start'});}
+function togSec(bid){const b=document.getElementById(bid);const a=document.getElementById('ta_'+bid);const o=b.classList.toggle('open');if(a)a.classList.toggle('open',o);}
+function resetSec(rid){document.getElementById(rid).classList.remove('show');window.scrollTo({top:0,behavior:'smooth'});}
+function pCheckElig(){const age=parseInt(document.getElementById('p_age').value)||0;const yrs=parseFloat(document.getElementById('p_yrs').value)||0;const type=document.getElementById('p_type').value;const box=document.getElementById('p_elig_box');if(!age&&!yrs){box.innerHTML='';return;}let msg='',cls='';if(type==='normal'){if(age>=60){msg='✅ مؤهَّل للتقاعد العادي (بلغ سن الـ60)';cls='elig-yes';}else{msg=`⏳ متبقٍّ ${60-age} سنة للتقاعد العادي`;cls='elig-partial';}}else if(type==='early'){if(yrs>=20&&age>=55){msg='✅ مؤهَّل للتقاعد المبكر (20 سنة خدمة + عمر 55)';cls='elig-yes';}else{const m=[];if(yrs<20)m.push(`${20-yrs} سنة خدمة إضافية`);if(age<55)m.push(`${55-age} سنة للعمر`);msg=`❌ ينقص: ${m.join(' و ')}`;cls='elig-no';}}else if(type==='early_nc'){if(yrs>=30){msg='✅ مؤهَّل للتقاعد المبكر بدون خصم (30 سنة خدمة)';cls='elig-yes';}else{msg=`⏳ ينقص ${30-yrs} سنة للتقاعد بدون خصم`;cls='elig-partial';}}else if(type==='disability'){msg='✅ ينطبق معاش العجز أو إصابة العمل (75% من متوسط الأجر)';cls='elig-yes';}box.innerHTML=`<div class="elig ${cls}">${msg}</div>`;}
+function calcPension(){const sal=parseFloat(document.getElementById('p_sal').value);const yrs=parseFloat(document.getElementById('p_yrs').value);const type=document.getElementById('p_type').value;const sav=parseFloat(document.getElementById('p_sav').value)||0;const ret=parseFloat(document.getElementById('p_ret').value)||5;if(isNaN(sal)||sal<=0||isNaN(yrs)||yrs<=0){const i=document.getElementById(isNaN(sal)||sal<=0?'p_sal':'p_yrs');i.style.borderColor='var(--red)';i.focus();setTimeout(()=>i.style.borderColor='',1500);return;}const eSal=Math.min(sal,3000);let pct=0,cutPct=0,base=0;if(type==='normal'||type==='early_nc'){pct=yrs*0.02;base=eSal*pct;}else if(type==='early'){pct=yrs*0.02;const age=parseInt(document.getElementById('p_age').value)||60;const earlyYrs=Math.max(0,Math.min(5,60-age));const extraYrs=Math.max(0,(60-age)-5);cutPct=earlyYrs*5+extraYrs*1;base=eSal*pct*(1-cutPct/100);}else if(type==='disability'){pct=0.75;base=eSal*0.75;}const minApp=base<115,maxApp=sal>3000;const pension=Math.max(base,115);const savFinal=sav>0?sav*(1+ret/100):0;document.getElementById('p_r_sal').textContent=fmt(sal);document.getElementById('p_r_yrs').textContent=fmtN(yrs)+' سنة';document.getElementById('p_r_pct').textContent=(pct*100).toFixed(1)+'٪';if(cutPct>0){document.getElementById('p_cut_row').style.display='flex';document.getElementById('p_r_cut').textContent='-'+cutPct+'٪';}else document.getElementById('p_cut_row').style.display='none';document.getElementById('p_r_pen').textContent=fmt(pension);document.getElementById('p_nmin').classList.toggle('show',minApp);document.getElementById('p_nmax').classList.toggle('show',maxApp);if(sav>0){document.getElementById('p_sav2_row').style.display='flex';document.getElementById('p_r_sav2').textContent=fmt(savFinal);}else document.getElementById('p_sav2_row').style.display='none';document.getElementById('p_r_tot').textContent=fmt(pension);document.getElementById('p_rs').textContent=`معاش ${fmt(pension)} ر.ع شهرياً · ${fmtN(yrs)} سنة خدمة`;const r=document.getElementById('p_res');r.classList.add('show','pulsing');setTimeout(()=>r.classList.remove('pulsing'),3500);r.scrollIntoView({behavior:'smooth',block:'start'});}
+function calcE(){const age=parseInt(document.getElementById('e_age').value)||0;const nat=document.getElementById('e_nat').value;const inc=parseFloat(document.getElementById('e_inc').value)||0;const res=document.getElementById('e_res').value;document.getElementById('e_r_inc').textContent=inc>0?fmt(inc):'0.000';let benefit=0,band='—',nc='notice-info',nm='أدخل البيانات للتحقق من الأهلية';const benEl=document.getElementById('e_r_ben');benEl.className='lg-val';if(!age){band='—';benefit=0;benEl.classList.add('success');}else if(nat!=='omani'){band='غير عُماني';nm='المنفعة للمواطنين العُمانيين حصراً';nc='notice-error';benEl.classList.add('danger');}else if(res==='no'){band='لا يقيم في السلطنة';nm='يُشترط الإقامة المشروعة المتواصلة';nc='notice-error';benEl.classList.add('danger');}else if(age<60){band='أقل من 60 سنة';nm=`لم يبلغ السن — متبقٍّ ${60-age} سنة`;nc='notice-error';benEl.classList.add('danger');}else if(inc<=1020){benefit=115;band='كاملة ≤ 1020 ر.ع';nm='ضمن الشريحة الأولى — يُصرف 115 ر.ع كاملاً';benEl.classList.add('success');}else if(inc<1250){const r=(1250-inc)/230;benefit=Math.max(0,Math.round(115*r*1000)/1000);band='خفض تدريجي 1020-1250';nm=`شريحة الخفض التدريجي (تعديلات أبريل 2026)`;nc='notice-warn';benEl.classList.add('success');}else{band='≥ 1250 ر.ع';nm='الدخل يتجاوز الحد الأقصى — لا استحقاق';nc='notice-error';benEl.classList.add('danger');}document.getElementById('e_r_band').textContent=band;document.getElementById('e_r_ben').textContent=fmt(benefit);const no=document.getElementById('e_notice');no.className=`notice ${nc} show`;const ico=nc==='notice-error'?'❌':nc==='notice-warn'?'⚠️':'ℹ️';no.innerHTML=`<span>${ico}</span><span>${nm}</span>`;}
+let benefs=[],bidC=0;const BT={widow:{l:'أرملة/زوج',i:'👫'},son:{l:'ابن',i:'👦'},daughter:{l:'بنت',i:'👧'},disabled:{l:'معاق/ة',i:'♿'},parent:{l:'والد/والدة',i:'👴'}};
+function chD(d){const i=document.getElementById('d_cnt');let v=parseInt(i.value)+d;if(v<1)v=1;if(v>20)v=20;i.value=v;updDPct();}
+function updDPct(){const n=parseInt(document.getElementById('d_cnt').value);document.getElementById('d_pct_b').textContent=n===1?'60٪':n===2?'80٪':'100٪';document.getElementById('d_pct_l').textContent=n===1?'مستحق واحد':n===2?'مستحقان اثنان':'ثلاثة مستحقين فأكثر';}
+function addB(t){benefs.push({id:++bidC,type:t,name:'',age:'',married:false,student:false,disabled:false});renderB();}
+function remB(id){benefs=benefs.filter(b=>b.id!==id);renderB();}
+function updB(id,f,v){const b=benefs.find(b=>b.id===id);if(!b)return;if(f==='age')b.age=v===''?'':parseInt(v);else b[f]=v;renderB();}
+function chkB(b){if(b.type==='disabled')return{ok:true,r:'معاق/ة — لا حد عمري'};if(b.type==='parent')return{ok:true,r:'والد/والدة — يُراجع الصندوق للتحقق'};if(b.type==='widow'){if(b.married)return{ok:false,r:'تزوّج/ت مجدداً — يسقط الحق'};return{ok:true,r:'أرمل/ة غير متزوج/ة'};}const age=parseInt(b.age);if(b.type==='son'){if(b.disabled)return{ok:true,r:'معاق — لا حد عمري'};if(isNaN(age))return{ok:null,r:'أدخل العمر'};if(age<22)return{ok:true,r:`عمره ${age} سنة (< 22)`};if(age<=26&&b.student)return{ok:true,r:`طالب عمره ${age} (< 26)`};return{ok:false,r:age>26?`تجاوز 26 سنة`:`${age} سنة وليس طالباً`};}if(b.type==='daughter'){if(b.disabled)return{ok:true,r:'معاقة — لا حد عمري'};if(b.married)return{ok:false,r:'متزوجة — يسقط الحق'};if(isNaN(age))return{ok:null,r:'أدخل العمر'};return age<=30?{ok:true,r:`غير متزوجة، ${age} سنة`}:{ok:false,r:`تجاوزت 30 سنة`};}return{ok:null,r:'—'};}
+function renderB(){const list=document.getElementById('d_benef_list');list.innerHTML='';benefs.forEach(b=>{const e=chkB(b);const sc=e.ok===true?'bs-ok':e.ok===false?'bs-no':'bs-wait';const si=e.ok===true?'✅':e.ok===false?'❌':'⏳';let ex='';if(b.type==='son')ex=`<div class="bf"><label>العمر</label><input type="number" min="0" max="100" placeholder="0" value="${b.age}" oninput="updB(${b.id},'age',this.value)"/></div><div class="bf"><label>الحالة</label><select onchange="updB(${b.id},'student',this.value==='student');updB(${b.id},'disabled',this.value==='disabled')"><option value="none" ${!b.student&&!b.disabled?'selected':''}>لا شيء</option><option value="student" ${b.student?'selected':''}>طالب</option><option value="disabled" ${b.disabled?'selected':''}>معاق</option></select></div>`;else if(b.type==='daughter')ex=`<div class="bf"><label>العمر</label><input type="number" min="0" max="100" placeholder="0" value="${b.age}" oninput="updB(${b.id},'age',this.value)"/></div><div class="bf"><label>الحالة</label><select onchange="updB(${b.id},'married',this.value==='married');updB(${b.id},'disabled',this.value==='disabled')"><option value="none" ${!b.married&&!b.disabled?'selected':''}>غير متزوجة</option><option value="married" ${b.married?'selected':''}>متزوجة</option><option value="disabled" ${b.disabled?'selected':''}>معاقة</option></select></div>`;else if(b.type==='widow')ex=`<div class="bf"><label>الاسم (اختياري)</label><input type="text" placeholder="—" value="${b.name}" oninput="updB(${b.id},'name',this.value)"/></div><div class="bf"><label>الحالة الزوجية</label><select onchange="updB(${b.id},'married',this.value==='married')"><option value="none" ${!b.married?'selected':''}>غير متزوج/ة</option><option value="married" ${b.married?'selected':''}>تزوّج مجدداً</option></select></div>`;else ex=`<div class="bf"><label>الاسم (اختياري)</label><input type="text" placeholder="—" value="${b.name}" oninput="updB(${b.id},'name',this.value)"/></div><div class="bf"><label>العمر (اختياري)</label><input type="number" min="0" placeholder="—" value="${b.age}" oninput="updB(${b.id},'age',this.value)"/></div>`;list.innerHTML+=`<div class="benef-item"><div class="bi-head"><div class="bi-badge">${BT[b.type].i} ${BT[b.type].l}${b.name?' — '+b.name:''}</div><button class="bi-remove" onclick="remB(${b.id})">✕</button></div><div class="bi-fields">${ex}</div><div class="bi-status ${sc}">${si} ${e.r}</div></div>`;});const ec=benefs.length>0?benefs.filter(b=>chkB(b).ok===true).length:null;const s=document.getElementById('d_elig_sum');if(ec!==null){s.classList.add('show');document.getElementById('d_elig_n').textContent=ec;if(ec>0){document.getElementById('d_cnt').value=ec;updDPct();}}else s.classList.remove('show');}
+function calcDeath(){const base=parseFloat(document.getElementById('d_pen').value);if(isNaN(base)||base<=0){const i=document.getElementById('d_pen');i.style.borderColor='var(--red)';i.focus();setTimeout(()=>i.style.borderColor='',1500);return;}const ec=benefs.length>0?benefs.filter(b=>chkB(b).ok===true).length:null;const cnt=ec!==null&&ec>0?ec:parseInt(document.getElementById('d_cnt').value);const pct=cnt===1?.6:cnt===2?.8:1;const prelim=base*pct,sb=prelim/cnt,sa=Math.max(sb,230),grand=sa*cnt,mA=sb<230;document.getElementById('d_r_base').textContent=fmt(base);document.getElementById('d_r_cnt').textContent=cnt;document.getElementById('d_r_pct').textContent=(pct*100).toFixed(0)+'٪';document.getElementById('d_r_prel').textContent=fmt(prelim);document.getElementById('d_r_sb').textContent=fmt(sb);document.getElementById('d_r_sa').textContent=fmt(sa);document.getElementById('d_r_grand').textContent=fmt(grand)+' ر.ع';document.getElementById('d_nmin').classList.toggle('show',mA);const ctl=cnt===1?'مستحق واحد':cnt===2?'مستحقان':cnt+' مستحقين';document.getElementById('d_rs').textContent=`معاش ${fmt(base)} ر.ع · ${ctl} · نسبة ${(pct*100).toFixed(0)}٪`;if(benefs.length>0){document.getElementById('d_tbl_sec').style.display='block';document.getElementById('d_tbl_body').innerHTML=benefs.map(b=>{const e=chkB(b);const bg=e.ok===true?`<span style="background:var(--brand-100);color:var(--brand-800);padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;">✅ مؤهَّل</span>`:e.ok===false?`<span style="background:#fef2f2;color:var(--red);padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;">❌ لا</span>`:`<span style="color:var(--muted);font-size:10px;">⏳ غير مكتمل</span>`;return`<tr style="border-bottom:1px solid var(--border-soft);"><td style="padding:7px 10px;">${BT[b.type].i} ${b.name||BT[b.type].l}</td><td style="padding:7px 10px;color:var(--muted);font-size:11px;">${e.r}</td><td style="padding:7px 10px;">${bg}</td></tr>`;}).join('');}const r=document.getElementById('d_res');r.classList.add('show','pulsing');setTimeout(()=>r.classList.remove('pulsing'),3500);r.scrollIntoView({behavior:'smooth',block:'start'});}
+function chF(d){const i=document.getElementById('f_cnt');let v=parseInt(i.value)+d;if(v<1)v=1;if(v>20)v=20;i.value=v;calcF();}
+function calcF(){const n=parseInt(document.getElementById('f_cnt').value)||1;const inc=parseFloat(document.getElementById('f_inc').value)||0;const omani=document.getElementById('f_omani').value;const res=document.getElementById('f_res').value;const target=115*Math.sqrt(n);const minA=n===1?15:25;document.getElementById('f_target').textContent=fmt(target);document.getElementById('f_inc_s').textContent=fmt(inc);['f_nmin','f_nzero','f_noman','f_nres'].forEach(id=>document.getElementById(id).classList.remove('show'));const benEl=document.getElementById('f_ben_s');benEl.className='lg-val';if(omani==='no'){document.getElementById('f_noman').classList.add('show');benEl.textContent='0.000';benEl.classList.add('danger');return;}if(res==='no'){document.getElementById('f_nres').classList.add('show');benEl.textContent='0.000';benEl.classList.add('danger');return;}let ben=target-inc;if(ben<=0){document.getElementById('f_nzero').classList.add('show');benEl.textContent='0.000';benEl.classList.add('danger');}else{if(ben<minA){ben=minA;document.getElementById('f_nmin').classList.add('show');}benEl.textContent=fmt(ben);benEl.classList.add('success');}}
+document.addEventListener('DOMContentLoaded',()=>{updDPct();calcE();calcF();document.getElementById('p_sal').addEventListener('keydown',e=>{if(e.key==='Enter')calcPension();});document.getElementById('d_pen').addEventListener('keydown',e=>{if(e.key==='Enter')calcDeath();});});
 </script>
 </body>
 </html>
